@@ -60,12 +60,11 @@ species_usage = -species_usage
 def calculate_a(propensity_functions, species_concentration, species_usage):
     # Calculamos las a_i
     a = species_usage * species_concentration
-    # No se si hay que sumar multiplicar
-    # a = np.sum(a, axis=1)
     a[a == 0] = 1
     a = np.prod(a, axis=1)
     a = a * propensity_functions
 
+    # Calculamos a_0 (suma de todas las a_i)
     a0 = np.sum(a)
 
     return a, a0
@@ -74,38 +73,21 @@ def calculate_a(propensity_functions, species_concentration, species_usage):
 # La probabilidad de elección de cada reacción es proporcional a la concentración
 # de sus reactivos en la mezcla
 def next_reaction(propensity_functions, species_concentration, species_usage):
-    # # Calculamos las a_i
-    # a = species_usage * species_concentration
-    # # No se si hay que sumar multiplicar
-    # # a = np.sum(a, axis=1)
-    # a[a == 0] = 1
-    # a = np.prod(a, axis=1)
-    # a = a * propensity_functions
-
-    # a0 = np.sum(a)
-
     a, a0 = calculate_a(propensity_functions, species_concentration, species_usage)
     r2 = random.random()
-
-    # pdb.set_trace()
 
     # Calculamos mu
     mu = 1
     while (np.sum(a[:mu]) < r2*a0) and (np.sum(a[:mu + 1]) >= r2*a0):
         mu += 1
 
-    print("Encontrado mu", mu - 1)
+    # print("Encontrado mu", mu - 1)
     # print(species_concentration)
 
     return mu - 1
 
 
 def next_time(propensity_functions, species_concentration, species_usage):
-    # a = species_usage * species_concentration
-    # a[a == 0] = 1
-    # a = np.prod(a, axis=1)
-    # a = a * propensity_functions
-
     _, a0 = calculate_a(propensity_functions, species_concentration, species_usage)
     r1 = random.random()
 
@@ -150,5 +132,7 @@ def gillespie(initial_time, final_time,
     plt.show()
 
 
+
+# pdb.set_trace()
 gillespie(initial_time, final_time,
           update_matrix, species_usage, propensity_functions, species_concentration)
