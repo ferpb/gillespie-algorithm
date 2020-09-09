@@ -50,18 +50,24 @@ final_time = 100
 # Algoritmo
 # =========
 
-# Eliminar elementos positivos de la matriz de actualización
-# para obtener una matriz de uso de reactivos
-species_usage = update_matrix
+species_usage = update_matrix.copy()
 species_usage[species_usage > 0] = 0
 species_usage = -species_usage
 
 
 def calculate_a(propensity_functions, species_concentration, species_usage):
     # Calculamos las a_i
+
     a = species_usage * species_concentration
-    a[a == 0] = 1
-    a = np.prod(a, axis=1)
+
+    # if (species_concentration[0] == 0):
+    #     pdb.set_trace()
+
+    # Multiplicar los elementos de cada fila mayores que 0
+    am = np.ma.MaskedArray(a, mask=(species_usage <= 0))
+    a = am.prod(axis=1)
+    a = a.filled(0)
+
     a = a * propensity_functions
 
     # Calculamos a_0 (suma de todas las a_i)
@@ -81,8 +87,8 @@ def next_reaction(propensity_functions, species_concentration, species_usage):
     while (np.sum(a[:mu]) < r2*a0) and (np.sum(a[:mu + 1]) >= r2*a0):
         mu += 1
 
-    # print("Encontrado mu", mu - 1)
-    # print(species_concentration)
+    print("Encontrado mu", mu - 1)
+    print(species_concentration)
 
     return mu - 1
 
@@ -128,9 +134,10 @@ def gillespie(initial_time, final_time,
     concentrations = concentrations.transpose()
 
     for c in concentrations:
-        plt.scatter(times, c)
+        plt.scatter(times, c, s=0.2)
+    plt.xlabel('Tiempo (s)')
+    plt.ylabel('Concentración de especies')
     plt.show()
-
 
 
 # pdb.set_trace()
