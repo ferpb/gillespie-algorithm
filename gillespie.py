@@ -28,7 +28,8 @@ from parser import gillespie_parse
 # """
 
 data = """
-  asdf   # Que bien
+# Ejemplo de sistema
+
 initial_time = 0
 final_time = 100
 
@@ -97,8 +98,8 @@ C = 13
 # species_concentration = np.array([100, 0, 0])
 
 # Tiempo en milisegundos
-initial_time = 0
-final_time = 100
+# initial_time = 0
+# final_time = 100
 
 
 
