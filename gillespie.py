@@ -1,4 +1,4 @@
-"""Implementation of the Gillespie Algorithm"""
+"""Implementation of the Gillespie algorithm"""
 
 import math
 import numpy as np
@@ -48,7 +48,7 @@ def update_concentrations(reaction, species_concentration, update_matrix):
 
 
 def isBlocked(species_concentration, species_usage):
-    # If there not enough reactants in the mixture for any reaction to occur,
+    # If there are not enough reactants in the mixture for any reaction to occur,
     # the system is blocked
 
     # Detect with reactans are not enough for earch reaction
@@ -64,7 +64,7 @@ def isBlocked(species_concentration, species_usage):
 def gillespie(initial_time, final_time,
               update_matrix, species_names, propensity_functions, species_concentration):
     """
-    Simulate the evolution of the system using the Gillespie Algorithm and plot the evolution of the
+    Simulate the evolution of the system using the Gillespie algorithm and plot the evolution of the
     species concentration over the simulation time.
 
     Args:
@@ -73,11 +73,11 @@ def gillespie(initial_time, final_time,
         final_time: final time of the simulation.
 
         update_matrix: num_reactions x num_species matrix with the species consumption
-                       and generation of each reaction. Bidirectional reaction must be considered
+                       and generation of each reaction. Bidirectional reactions must be considered
                        as two separated unidirectional ones.
 
         species_names: Array of legth num_species with the names of the species
-                       (in the same order as the update_matrix)
+                       (in the same order as the update_matrix).
 
         propensity_functions: Array of length num_reactions with the propensity function value
                               of each reaction (in the same order as the update_matrix).
@@ -144,8 +144,8 @@ def gillespie(initial_time, final_time,
     for c in concentrations:
         # plt.scatter(times, c, s=0.2)
         plt.plot(times, c)
-    plt.xlabel('Tiempo (ms)')
-    plt.ylabel('Número de moléculas')
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Number of molecules')
     plt.legend(species_names, markerscale=10)
     plt.show()
 

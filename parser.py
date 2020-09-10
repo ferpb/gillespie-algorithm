@@ -1,4 +1,4 @@
-"""Module for parsing simple chemical system descriptions"""
+"""Module for parsing simple chemical systems descriptions"""
 
 ################################
 #            LEXER             #
@@ -63,15 +63,6 @@ def t_error(t):
 # Build the lexer
 import ply.lex as lex
 lexer = lex.lex()
-
-
-# lexer.input(data)
-
-# while True:
-#     tok = lexer.token()
-#     if not tok:
-#         break
-#     print(tok)
 
 
 ################################
@@ -208,7 +199,7 @@ def gillespie_parse(data):
     for i, rvalue in enumerate(reactions.values()):
         print(rvalue)
         for skey, svalue in rvalue['reactants'].items():
-            # reactive (negative)
+            # reactant (negative)
             update_matrix[i][species.index(skey)] = -svalue
         for skey, svalue in rvalue['products'].items():
             # product (positive)

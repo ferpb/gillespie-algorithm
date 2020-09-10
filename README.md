@@ -25,12 +25,12 @@ B = 0
 C = 0
 ```
 
-It's posible to write comments using `#`.
+It's posible to indicate line comments with `#`.
 
 ## Usage
 ```
 from gillespie import run_simulation
-run_simulation(sistema)
+run_simulation(system)
 ```
 
 ## Examples
