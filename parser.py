@@ -1,8 +1,4 @@
-# -----------------------------------------------------------------------------
-# calc.py
-#
-# A simple calculator with variables.
-# -----------------------------------------------------------------------------
+"""Module for parsing simple chemical system descriptions"""
 
 ################################
 #            LEXER             #
@@ -83,15 +79,15 @@ lexer = lex.lex()
 ################################
 
 # Dictionary of reactions
-# reaction format: {<name>: {'reactives': {<name>: <quantity>,...},
-#                  {'products': {<name>: <quantity>,...},
-#                  {'constant': <name>}}
+# reaction format: {<name>: {'reactants': {<name>: <quantity>,...},
+#                           {'products': {<name>: <quantity>,...},
+#                           {'constant': <name>}}
 reactions = {}
 # Dictionary of names for storings species concentrations and constants values
 # name format: {<name>: <value>}
 names = {}
 initial_time = 0
-final_time = 100
+final_time = 0
 
 def p_data(p):
     'data : initialtime finaltime reaction_list assignation_list'
@@ -103,7 +99,7 @@ def p_reaction_list(p):
 def p_reaction(p):
     'reaction : NAME COLON species_list ARROW species_list SEMICOLON NAME'
     global reactions
-    reactions[p[1]] = {'reactives': p[3], 'products': p[5], 'constant': p[7]}
+    reactions[p[1]] = {'reactants': p[3], 'products': p[5], 'constant': p[7]}
 
 def p_species_list(p):
     '''species_list : species_list PLUS specie
@@ -160,6 +156,13 @@ import ply.yacc as yacc
 yacc.yacc()
 
 def parse(data):
+    # Initialize global variables
+    global reactions, names, initial_time, final_time
+    reactions = {}
+    names = {}
+    initial_time = 0
+    final_time = 0
+
     yacc.parse(data)
     return (initial_time, final_time, reactions, names)
 
@@ -176,18 +179,18 @@ import numpy as np
 
 def gillespie_parse(data):
     (initial_time, final_time, reactions, names) = parse(data)
+    print("Parser")
     print(initial_time)
     print(final_time)
     print(reactions)
     print(names)
     print()
-    print("Empezar gillespie")
 
     # Get all the species in the instance
     species = []
     for rkey, rvalue in reactions.items():
         print(rkey, rvalue)
-        for skey in rvalue['reactives']:
+        for skey in rvalue['reactants']:
             print(skey)
             species.append(skey)
         for skey in rvalue['products']:
@@ -204,7 +207,7 @@ def gillespie_parse(data):
 
     for i, rvalue in enumerate(reactions.values()):
         print(rvalue)
-        for skey, svalue in rvalue['reactives'].items():
+        for skey, svalue in rvalue['reactants'].items():
             # reactive (negative)
             update_matrix[i][species.index(skey)] = -svalue
         for skey, svalue in rvalue['products'].items():
@@ -224,6 +227,7 @@ def gillespie_parse(data):
         except KeyError:
             species_concentration.append(0)
 
+    print("Gillespie")
     print(initial_time)
     print(final_time)
     print(update_matrix)

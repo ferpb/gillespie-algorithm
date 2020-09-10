@@ -1,4 +1,4 @@
-# Implementación del algoritmo de Gillespie
+"""Implementation of the Gillespie Algorithm"""
 
 import math
 import numpy as np
@@ -9,123 +9,25 @@ import pdb
 from parser import gillespie_parse
 
 
-# Entrada del algoritmo
-# =====================
-
-# data = """
-# initial_time = 0
-# final_time = 100
-
-# r1: A + B -> AB; k1
-# r2: 2AB -> C; k2
-
-# k1 = 1.0
-
-# A = 100
-# C = 1
-# B = 10
-# AB = 0
-# """
-
-data = """
-# Ejemplo de sistema
-
-initial_time = 0
-final_time = 100
-
-r1: A + B -> AB; k1
-r2: AB -> A + B; k2
-r3: AB -> A + C; k3
-
-k1 = 1
-k2 = 2
-k3 = 3
-
-A = 25
-B = 583
-AB = 5
-C = 13
-"""
-
-
-# Concentración inicial de cada una de las especies del sistema
-
-# Tiempo inicial y final de la simulación
-
-# Matriz de actualización de las especies en el sistema:
-#    Las reacciones deben ser unidireccionales, así que si una reacción es
-#    bidirección hay que considerarla como dos reacciones unidireccionales
-#    separadas.
-
-#    Ejemplo:
-#
-#      Reacciones:
-#      A + B   ->  AB
-#      AB      ->  A + B
-#      AB      ->  A + C
-#
-#      Matriz:
-#               A   B   AB  C
-#      reacc0 [-1, -1,  1,  0]
-#      reacc1 [ 1,  1, -1,  0]
-#      reacc2 [ 1,  0, -1,  1]
-
-# Funciones de velocidad para cada reacción en un array en el mismo orden
-# que la matriz de actualización
-
-# 1
-# update_matrix = np.array([[-1, -1,  1,  0],
-#                           [ 1,  1, -1,  0],
-#                           [ 1,  0, -1,  1]])
-
-# species_names = ["A", "B", "AB", "C"]
-
-# propensity_functions = np.array([5, 40, 3])
-# species_concentration = np.array([25, 583, 5, 13])
-
-# 2
-# update_matrix = np.array([[-1, -1,  1],
-#                           [1, 1,  -1]])
-# species_names = ["A", "B", "AB"]
-# propensity_functions = np.array([2, 1])
-# species_concentration = np.array([10, 10, 0])
-
-# 3
-# update_matrix = np.array([[-1, 1, 0],
-#                          [0, -1, 1]])
-# species_names = ["A", "B", "C"]
-# propensity_functions = np.array([0.11, 0.1])
-# species_concentration = np.array([100, 0, 0])
-
-# Tiempo en milisegundos
-# initial_time = 0
-# final_time = 100
-
-
-
-# Algoritmo
-# =========
-
 def calculate_a(propensity_functions, species_concentration, species_usage):
-    # Calculamos las a_i
+    # Calculate a_i
     a = species_usage * species_concentration
-
-    # Multiplicar los elementos de cada fila mayores que 0
+    # Multiply the elements of each row that are bigger than 0
     am = np.ma.MaskedArray(a, mask=(species_usage <= 0))
     a = am.prod(axis=1)
     a = a.filled(0)
 
     a = a * propensity_functions
 
-    # Calculamos a_0 (suma de todas las a_i)
+    # Calculate a_0 (sum of all a_i)
     a0 = np.sum(a)
 
     return a, a0
 
 
-# La probabilidad de elección de cada reacción es proporcional a la concentración
-# de sus reactivos en la mezcla
 def next_reaction(a, a0):
+    # The probability of choosing a reaction is proportional to the concentration
+    # of its reactants in the mixture
     r2 = random.random()
     mu = 1
     while (mu < len(a)) and (np.sum(a[:mu]) < r2*a0):
@@ -134,6 +36,7 @@ def next_reaction(a, a0):
 
 
 def next_time(a0):
+    # The next time leap is proportional to the number of reactants in the mixture
     r1 = random.random()
     tau = (1 / a0) * math.log(1 / r1)
     return tau
@@ -144,28 +47,78 @@ def update_concentrations(reaction, species_concentration, update_matrix):
                   update_matrix[reaction])
 
 
-# Si no hay reactivos suficientes para que se produzca ninguna reacción,
-# el sistema está bloqueado
 def isBlocked(species_concentration, species_usage):
-    # Detectar qué reactivos no son suficientes para llevar a cabo la reacción
+    # If there not enough reactants in the mixture for any reaction to occur,
+    # the system is blocked
+
+    # Detect with reactans are not enough for earch reaction
     insufficient = np.logical_and(species_concentration < species_usage, species_usage > 0)
 
-    # Una reacción está bloqueada si alguno de sus reactivos es insuficiente
+    # A reaction is blocked if any of its reactants is not sufficient
     blocked_reaction = np.any(insufficient, axis=1)
 
-    # El sistema está bloqueado si todas las reacciones están bloqueadas
+    # The system is blocked if all its reactions are blocked
     return np.all(blocked_reaction)
 
 
 def gillespie(initial_time, final_time,
-              update_matrix, species_names, species_usage, propensity_functions, species_concentration):
+              update_matrix, species_names, propensity_functions, species_concentration):
+    """
+    Simulate the evolution of the system using the Gillespie Algorithm and plot the evolution of the
+    species concentration over the simulation time.
+
+    Args:
+        initial_time: initial time of the simulation.
+
+        final_time: final time of the simulation.
+
+        update_matrix: num_reactions x num_species matrix with the species consumption
+                       and generation of each reaction. Bidirectional reaction must be considered
+                       as two separated unidirectional ones.
+
+        species_names: Array of legth num_species with the names of the species
+                       (in the same order as the update_matrix)
+
+        propensity_functions: Array of length num_reactions with the propensity function value
+                              of each reaction (in the same order as the update_matrix).
+
+        species_concentration: Array of length num_species with the initial concentrations of
+                               each specie in the system (in the same order as the update_matrix).
+
+    Example:
+        System:
+            Initial time = 0
+            Final time = 100
+
+            A -> B; k1
+            B -> C; k2
+
+            k1 = 0.11
+            k2 = 0.1
+
+            A = 100
+            B = 0
+            C = 0
+
+        Args:
+            initial_time = 0
+            final_time = 100
+            update_matrix: [[-1,  1,  0],
+                            [ 0, -1,  1]]
+            species_names: ["A", "B", "C"]
+            propensity_functions: [0.11, 0.1]
+            species_concentration: [100, 0, 0]
+    """
+    species_usage = update_matrix.copy()
+    species_usage[species_usage > 0] = 0
+    species_usage = -species_usage
 
     t = initial_time
 
     times = [t]
     concentrations = [species_concentration]
 
-    # Iterar mientras que hay reactivos y no se ha pasado el tiempo de la simuación
+    # Iterate while the simulation time has not been consumed
     while t < final_time:
         if isBlocked(species_concentration, species_usage):
             print("The system is blocked!")
@@ -197,20 +150,14 @@ def gillespie(initial_time, final_time,
     plt.show()
 
 
-# pdb.set_trace()
-(initial_time, final_time, update_matrix, species_names, propensity_functions, species_concentration) = gillespie_parse(data)
-species_usage = update_matrix.copy()
-species_usage[species_usage > 0] = 0
-species_usage = -species_usage
+def run_simulation(data):
+    """
+    Parse the description of a chemical system and simulate it using the gillespie() function.
 
-print()
-print(initial_time)
-print(final_time)
-print(update_matrix)
-print(species_names)
-print(propensity_functions)
-print(species_concentration)
-print(species_usage)
+    Args:
+        data: string containing the description of the system
+    """
+    (initial_time, final_time, update_matrix, species_names, propensity_functions, species_concentration) = gillespie_parse(data)
 
-gillespie(initial_time, final_time,
-          update_matrix, species_names, species_usage, propensity_functions, species_concentration)
+    gillespie(initial_time, final_time,
+              update_matrix, species_names, propensity_functions, species_concentration)
