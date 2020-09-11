@@ -1,5 +1,29 @@
 # bioinformatica
 
+## How to execute
+It's recommended to execute the program in  a virtual environment, in order to avoid problems with Python versions and packages dependencies.
+
+These are the steps for using `venv`:
+
+1. Go to que project's root directory and create the virtual environment with the following command:
+
+	```
+	python3 -m venv gillespie_env
+	```
+
+2. Next, activate the environment:
+
+	```
+	source gillespie_env/bin/activate
+
+	```
+
+3. Finally, install the required packages:
+4. 
+	```
+	pip install -r requirements.txt
+	```
+
 ## Input
 
 A string describing the system, with the next format:
