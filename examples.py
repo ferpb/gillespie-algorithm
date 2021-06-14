@@ -1,7 +1,8 @@
-from gillespie import run_simulation
+import gillespie
 
 # Example 1
-run_simulation(
+# https://www.youtube.com/watch?v=46ruoTTLL5g
+gillespie.run_simulation(
 """
 initial_time = 0
 final_time = 100
@@ -22,7 +23,7 @@ C = 13
 )
 
 # Example 2
-run_simulation(
+gillespie.run_simulation(
 """
 initial_time = 0
 final_time = 100
@@ -40,7 +41,7 @@ AB = 0
 )
 
 # Example 3
-run_simulation(
+gillespie.run_simulation(
 """
 initial_time = 0
 final_time = 100

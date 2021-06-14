@@ -1,4 +1,7 @@
-# bioinformatica
+# Gillespie Stochastic Simulation Algorithm
+Python implementation of Gillespie's Stochastic Algorithm to simulate the evolution of the concentration of species in a chemical system.
+
+Fernando Peña Bes, *Universidad de Zaragoza*
 
 ## How to execute
 It's recommended to execute the program in  a virtual environment, in order to avoid problems with Python versions and packages dependencies.
@@ -15,11 +18,10 @@ These are the steps for using `venv`:
 
 	```
 	source gillespie_env/bin/activate
-
 	```
 
 3. Finally, install the required packages:
-4. 
+
 	```
 	pip install -r requirements.txt
 	```
@@ -49,12 +51,12 @@ B = 0
 C = 0
 ```
 
-It's posible to indicate line comments with `#`.
+Everything from the `#` character to the end of the line is considered a comment.
 
 ## Usage
 ```
-from gillespie import run_simulation
-run_simulation(system)
+import gillespie
+gillespie.run_simulation(system_string)
 ```
 
 ## Examples
@@ -63,6 +65,12 @@ The file `examples.py` contains three example systems. They can be run with the 
 ```
 python3 examples.py
 ```
+
+These are the results of the simulations:
+
+|Example 1|Example 2|Example 3|
+|:---:|:---:|:---:|
+|![example1](plots/1_r3_3.png)|![example2](plots/2.png)|![example3](plots/3_2.png)|
 
 ## References
 * Daniel T. Gillespie, *A General Method for Numerically Simulating the Stochastic Time Evolution of Coupled Chemical Reactions* (1976): <http://web.mit.edu/endy/www/scraps/signal/JCompPhys(22)403.pdf>

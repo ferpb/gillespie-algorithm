@@ -47,7 +47,7 @@ def update_concentrations(reaction, species_concentration, update_matrix):
                   update_matrix[reaction])
 
 
-def isBlocked(species_concentration, species_usage):
+def is_blocked(species_concentration, species_usage):
     # If there are not enough reactants in the mixture for any reaction to occur,
     # the system is blocked
 
@@ -109,7 +109,13 @@ def gillespie(initial_time, final_time,
             propensity_functions: [0.11, 0.1]
             species_concentration: [100, 0, 0]
     """
-    species_usage = update_matrix.copy()
+    # Check dimensions
+    assert(len(species_names) == len(species_concentration))
+    assert((len(update_matrix), len(update_matrix[0])) == (len(propensity_functions), len(species_names)))
+
+    print("Simulating...")
+
+    species_usage = np.array(update_matrix)
     species_usage[species_usage > 0] = 0
     species_usage = -species_usage
 
@@ -120,7 +126,7 @@ def gillespie(initial_time, final_time,
 
     # Iterate while the simulation time has not been consumed
     while t < final_time:
-        if isBlocked(species_concentration, species_usage):
+        if is_blocked(species_concentration, species_usage):
             print("The system is blocked!")
             break
 
@@ -134,8 +140,8 @@ def gillespie(initial_time, final_time,
         concentrations.append(species_concentration)
 
 
-    print("t:", t)
-    print("species_concentration:", species_concentration)
+    print("    end time:", t, "ms")
+    print("    end species_concentration:", species_concentration)
 
     # Plot species concentration
     concentrations = np.array(concentrations)

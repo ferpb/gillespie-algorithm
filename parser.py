@@ -170,26 +170,26 @@ import numpy as np
 
 def gillespie_parse(data):
     (initial_time, final_time, reactions, names) = parse(data)
-    print("Parser")
-    print(initial_time)
-    print(final_time)
-    print(reactions)
-    print(names)
-    print()
+    # print("Parser")
+    # print(initial_time)
+    # print(final_time)
+    # print(reactions)
+    # print(names)
+    # print()
 
     # Get all the species in the instance
     species = []
     for rkey, rvalue in reactions.items():
-        print(rkey, rvalue)
+        # print(rkey, rvalue)
         for skey in rvalue['reactants']:
-            print(skey)
+            # print(skey)
             species.append(skey)
         for skey in rvalue['products']:
-            print(skey)
+            # print(skey)
             species.append(skey)
     # Remove duplicates from species list maintaining order
     species = list(dict.fromkeys(species))
-    print(species)
+    # print(species)
 
     # Construct update matrix (num_reactions x num_species)
     # and propensity_functions list
@@ -197,7 +197,7 @@ def gillespie_parse(data):
     propensity_functions = []
 
     for i, rvalue in enumerate(reactions.values()):
-        print(rvalue)
+        # print(rvalue)
         for skey, svalue in rvalue['reactants'].items():
             # reactant (negative)
             update_matrix[i][species.index(skey)] = -svalue
@@ -218,11 +218,11 @@ def gillespie_parse(data):
         except KeyError:
             species_concentration.append(0)
 
-    print("Gillespie")
-    print(initial_time)
-    print(final_time)
-    print(update_matrix)
-    print(species)
-    print(propensity_functions)
-    print(species_concentration)
+    # print("Gillespie")
+    # print(initial_time)
+    # print(final_time)
+    # print(update_matrix)
+    # print(species)
+    # print(propensity_functions)
+    # print(species_concentration)
     return(initial_time, final_time, update_matrix, species, propensity_functions, species_concentration)
